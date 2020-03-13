@@ -1,5 +1,5 @@
 /*
- * priority-nav - v1.1.0 | (c) 2020 @gijsroge | MIT license
+ * priority-nav - v1.2.0 | (c) 2020 @gijsroge | MIT license
  * Repository: https://github.com/gijsroge/priority-navigation.git
  * Description: Priority+ pattern navigation that hides menu items if they don't fit on screen.
  * Demo: http://gijsroge.github.io/priority-nav.js/
@@ -149,7 +149,6 @@
    * @param el
    * @param parent
    */
-
   var parent = function(el, parent) {
     while (el !== null) {
       if (el.parentNode === parent) {
@@ -594,10 +593,25 @@
         }
       });
 
+    var lastItemCloseHandler = function(event) {
+      console.log(event);
+      toggleClass(_this.querySelector(navDropdown), "show");
+      toggleClass(_this.querySelector(navDropdownToggle), "is-open");
+      toggleClass(_this, "is-open");
+      _this
+        .querySelector(navDropdown + " li:last-child a")
+        .removeEventListener("blur", lastItemCloseHandler);
+    };
+
     _this
       .querySelector(navDropdownToggle)
       .addEventListener("blur", function(e) {
         if (!parent(e.relatedTarget, toggleWrapper)) {
+          // clean up
+          document
+            .querySelector(navDropdown + " li:last-child a")
+            .removeEventListener("blur", lastItemCloseHandler);
+
           toggleClass(_this.querySelector(navDropdown), "show");
           toggleClass(this, "is-open");
           toggleClass(_this, "is-open");
@@ -615,8 +629,16 @@
               .setAttribute("aria-hidden", "true");
             _this.querySelector(navDropdown).blur();
           }
+        } else {
+          document
+            .querySelector(navDropdown + " li:last-child a")
+            .addEventListener("blur", lastItemCloseHandler);
         }
       });
+
+    /*
+     * Close menu when last item is selected
+     */
 
     /*
      * Remove when clicked outside dropdown
