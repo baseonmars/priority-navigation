@@ -179,6 +179,25 @@
     }
   };
 
+  var removeClass = function(el, className) {
+    if (el.classList) {
+      el.classList.remove(className);
+    } else {
+      el.className = el.className.replace(
+        new RegExp("s?" + className + "s?"),
+        ""
+      );
+    }
+  };
+
+  var addClass = function(el, className) {
+    if (el.classList) {
+      el.classList.add(className);
+    } else {
+      el.className = el.className + " " + className;
+    }
+  };
+
   /**
    * Check if dropdown menu is already on page before creating it
    * @param mainNavWrapper
@@ -577,13 +596,22 @@
         }
       });
 
+    var lastItemCloseHandler = function(event) {
+      removeClass(_this.querySelector(navDropdown), "show");
+      removeClass(_this.querySelector(navDropdownToggle), "is-open");
+      removeClass(_this, "is-open");
+      _this
+        .querySelector(navDropdown + " li:last-child a")
+        .removeEventListener("blur", lastItemCloseHandler);
+    };
+
     _this
       .querySelector(navDropdownToggle)
       .addEventListener("focus", function(event) {
         if (-1 === _this.className.indexOf("is-open")) {
-          toggleClass(_this.querySelector(navDropdown), "show");
-          toggleClass(this, "is-open");
-          toggleClass(_this, "is-open");
+          addClass(_this.querySelector(navDropdown), "show");
+          addClass(this, "is-open");
+          addClass(_this, "is-open");
 
           /**
            * Toggle aria hidden for accessibility
@@ -592,16 +620,6 @@
           _this.querySelector(navDropdown).blur();
         }
       });
-
-    var lastItemCloseHandler = function(event) {
-      console.log(event);
-      toggleClass(_this.querySelector(navDropdown), "show");
-      toggleClass(_this.querySelector(navDropdownToggle), "is-open");
-      toggleClass(_this, "is-open");
-      _this
-        .querySelector(navDropdown + " li:last-child a")
-        .removeEventListener("blur", lastItemCloseHandler);
-    };
 
     _this
       .querySelector(navDropdownToggle)
@@ -612,9 +630,9 @@
             .querySelector(navDropdown + " li:last-child a")
             .removeEventListener("blur", lastItemCloseHandler);
 
-          toggleClass(_this.querySelector(navDropdown), "show");
-          toggleClass(this, "is-open");
-          toggleClass(_this, "is-open");
+          removeClass(_this.querySelector(navDropdown), "show");
+          removeClass(this, "is-open");
+          removeClass(_this, "is-open");
 
           /**
            * Toggle aria hidden for accessibility
